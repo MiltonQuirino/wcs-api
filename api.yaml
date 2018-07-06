@@ -1,0 +1,2926 @@
+swagger: '2.0'
+
+info:
+  version: "0.4"
+  title: Fastshop App
+  description: Fastshop API. <br /><br />Created by Jair Rillo Junior (jairrj@br.ibm.com)<br/><br/><strong>PROD HOST</strong> https://www.fastshop.com.br<br /><strong>BVT HOST</strong> https://bvt2wcs.fastshop.com.br
+
+host: bvt2wcs.fastshop.com.br
+basePath: /wcs/resources/
+schemes:
+  - https
+
+paths:
+
+  /v1/auth/login/:
+    post:
+      tags:
+        - Autenticação
+      description:
+        Dado o CPF ou CNPJ e Senha, loga o usuário na sessão do WCS
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Objeto que possui o CPF/CNPJ e a senha
+          required: true
+          schema:
+            $ref: '#/definitions/LoginModel'
+
+      responses:
+        200:
+          description: Login com sucesso
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        400:
+          description: Dados inválidos
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        401:
+          description: Login ou Senha inválidos
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway    
+
+  /v1/auth/logout/:
+    delete:
+      tags:
+        - Autenticação
+      description:
+        Logout do serviço
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string          
+      responses:
+        204:
+          description: Logout com sucesso
+        400:
+          description: Dados inválidos
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway 
+
+  /v1/cart/:
+    get:
+      tags:
+        - Carrinho
+      description:
+        Recupera o carrinho do usuário logado
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        200:
+          description: Retorno do carrinho do usuário
+          schema:
+            $ref: '#/definitions/Cart'          
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        404:
+          description: Não há nenhum item no carrinho
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway   
+
+  /v1/cart/create: 
+    post:
+      tags:
+        - Carrinho
+      description:
+        Adiciona um item ao carrinho
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Items do Produto
+          required: true
+          schema:
+            $ref: '#/definitions/AddOrderItem'                      
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        201:
+          description: Item adicionado com sucesso
+          schema:
+            $ref: '#/definitions/AddOrderItemResponse'          
+        400:
+          description: Dado informado inválido
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway
+  /v1/cart/update:
+    put:
+      tags:
+        - Carrinho
+      description:
+        Atualiza o preço de algum item do carrinho
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Items do Produto
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateOrderItem'                      
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        200:
+          description: Retorno de sucesso
+          schema:
+            $ref: '#/definitions/AddOrderItemResponse'          
+        400:
+          description: Dado informado inválido
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                    
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        404:
+          description: Pedido não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                    
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway 
+
+  /v1/cart/delete/{ordemItemID}:
+    delete:
+      tags:
+        - Carrinho
+      description:
+        Remove um item do carrinho
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: ordemItemID
+          in: path
+          description: Identificador do Item
+          required: true
+          type: string
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        204:
+          description: Item excluído com sucesso
+        400:
+          description: Dado informado inválido
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                    
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        404:
+          description: Pedido não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                    
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway                   
+
+  /v1/cart/address: 
+    post:
+      tags:
+        - Carrinho
+      description:
+        Adiciona o endereço ao carrinho
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Items do Endereço
+          required: true
+          schema:
+            $ref: '#/definitions/CartAddress'                      
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        201:
+          description: Item adicionado com sucesso      
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway
+
+  /v1/cart/shipping/{orderId}/{CEP}: 
+    get:
+      tags:
+        - Carrinho
+      description:
+        Busca os fretes disponíveis
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: orderId
+          in: path
+          description: Identificador do carrinho
+          required: true
+          type: string
+        - name: CEP
+          in: path
+          description: CEP
+          required: true
+          type: string          
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        200:
+          description: Dados dos fretes retornados com sucesso     
+          schema:
+            $ref: '#/definitions/ShippingAvailables'                       
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        404:
+          description: Nenhum valor encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway 
+
+  /v1/cart/shipping: 
+    post:
+      tags:
+        - Carrinho
+      description:
+        Adiciona o frete ao carrinho
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Items do Frete
+          required: true
+          schema:
+            $ref: '#/definitions/CartShipping'
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        201:
+          description: Item adicionado com sucesso      
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway          
+
+  /v1/cart/payment/: 
+    get:
+      tags:
+        - Carrinho
+      description:
+        Recupera as formas de pagamento
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        200:
+          description: Pagamentos permitidos
+          schema:      
+            $ref: '#/definitions/CartPayment'
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway   
+  /v1/cart/checkout/: 
+    post:
+      tags:
+        - Carrinho
+      description:
+        Salva a forma de pagamento e efetua o checkout do pagamento
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Dados do cartão
+          required: true
+          schema:
+            $ref: '#/definitions/CartCheckout'            
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string        
+      responses:
+        204:
+          description: Checkout realizado com sucesso
+        400:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                      
+        401:
+          description: Usuário não autorizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway  
+
+  /v1/order/history:
+    get:
+      tags:
+        - Pedidos
+      description:
+        Retorna o histórico de peditos
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string                
+      responses:
+        200:
+          description: Retorno lista de histórico de pedidos
+          schema:
+            $ref: '#/definitions/OrderHistory'
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                                             
+        404:
+          description: Não existe pedido realizado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                                                         
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway 
+
+  /v1/order/{orderID}:
+    get:
+      tags:
+        - Pedidos
+      description:
+        Retorna os detalhes do Pedido
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: orderID
+          in: path
+          description: Identificador do Pedido
+          required: true
+          type: string
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string                
+      responses:
+        200:
+          description: Retorno lista de histórico de pedidos
+          schema:
+            $ref: '#/definitions/OrderDetail'
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                                             
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway           
+
+  /v1/customer/:
+    get:
+      tags:
+        - Clientes
+      description:
+        Retorna alguns dados do cliente
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string                
+      responses:
+        200:
+          description: Retorno dos dados do cliente
+          schema:
+            $ref: '#/definitions/CustomerReduzido'
+        400:
+          description: Dados inválidos - Provavelmente faltando informar o WCToken
+          schema:
+            $ref: '#/definitions/ErrorResponse'     
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                                             
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway                        
+
+  /v1/customer/create:
+    post:
+      tags:
+        - Clientes
+      description:
+        Cadastro de um novo cliente PF ou PJ
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Objeto que possui os dados da pessoa
+          required: true
+          schema:
+            $ref: '#/definitions/Customer'
+      responses:
+        201:
+          description: Cadastro com Sucesso
+        400:
+          description: Dados inválidos
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway     
+
+  /v1/customer/update:
+    put:
+      tags:
+        - Clientes
+      description:
+        Atualiza dados do cliente
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/CustomerReduzido'
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string                
+      responses:
+        204:
+          description: Dados atualizados com sucesso
+        400:
+          description: Dados inválidos
+          schema:
+            $ref: '#/definitions/ErrorResponse'     
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                                             
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway             
+
+  /v1/customer/check/{document}:
+    get:
+      tags:
+        - Clientes
+      description:
+        Verifica se o CPF ou o CNPJ já estão cadastrados
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: document
+          in: path
+          description: CPF ou CNPJ
+          required: true      
+          type: string
+      responses:
+        204:
+          description: CPF ou CNPJ já existe
+        400:
+          description: Dados inválidos
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        404:
+          description: Dados não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                    
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway 
+
+  /v1/customer/forgotPassword/{document}:
+    get:
+      tags:
+        - Clientes
+      description:
+        Serviço para enviar a senha por email.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: document
+          in: path
+          description: CPF ou CNPJ
+          required: true   
+          type: string   
+      responses:
+        200:
+          description: Email enviado com sucesso
+          schema:
+            $ref: '#/definitions/ForgotPassword'          
+        404:
+          description: CPF ou CNPJ não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                    
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway           
+
+  /v1/customer/searchAddress/{cep}:
+    get:
+      tags:
+        - Clientes
+      description:
+        Dado um CEP, retorna os dados do endereço
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: cep
+          in: path
+          description: CEP do cliente
+          required: true
+          type: string
+      responses:
+        200:
+          description: CEP Encontrado
+          schema:
+            $ref: '#/definitions/CEP'
+        404:
+          description: CEP não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway 
+
+  /v1/customer/searchAddressByStreet/:
+    post:
+      tags:
+        - Clientes
+      description:
+        Descobre o CEP através dos dados do endereço
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/AddressByStreetRequest'          
+      responses:
+        200:
+          description: CEP Encontrado
+          schema:
+            $ref: '#/definitions/AddressByStreetResponse'
+        404:
+          description: CEP não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway           
+
+  /v1/customer/searchCNPJ/{cnpj}:
+    get:
+      tags:
+        - Clientes
+      description:
+        Dado um CNPJ, busca as informações no searasa
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: cnpj
+          in: path
+          description: CNPJ do cliente
+          required: true
+          type: string
+      responses:
+        200:
+          description: CNPJ Encontrado
+          schema:
+            $ref: '#/definitions/CNPJ'
+        404:
+          description: CNPJ não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway     
+
+  /v1/customer/addresses:
+    get:
+      tags:
+        - Endereços
+      description:
+        Listagem de endereços do cliente
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string
+      responses:
+        200:
+          description: Listagem dos endereços
+          schema:
+            $ref: '#/definitions/CustomerAddresses'          
+        400:
+          description: Faltando informar o WCToken
+          schema:
+            $ref: '#/definitions/ErrorResponse'      
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                              
+        404:
+          description: Nenhum endereço cadastrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway  
+
+  /v1/customer/addresses/create:
+    post:
+      tags:
+        - Endereços
+      description:
+        Adiciona um novo endereço
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/CustomerAddressCreate'                  
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string
+      responses:
+        201:
+          description: Endereço adicionado com sucesso
+        400:
+          description: Dados inválido
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway    
+
+  /v1/customer/addresses/update:
+    put:
+      tags:
+        - Endereços
+      description:
+        Editar um endereço
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/CustomerAddressUpdate'                  
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string
+      responses:
+        204:
+          description: Endereço Atualizado
+        400:
+          description: Dados inválido
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway
+
+  /v1/customer/addresses/delete/{addressID}:
+    delete:
+      tags:
+        - Endereços
+      description:
+        Remove um endereço
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: addressID
+          in: path
+          description: Idenficador do endereço
+          required: true
+          type: string          
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string
+      responses:
+        204:
+          description: Endereço Excluído
+        400:
+          description: Dados inválido
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway                                                   
+
+  /v1/products/topCategory:
+    get:
+      tags:
+        - Produtos
+      description:
+        Retorna a lista de Departamentos.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Retorno dos departamentos
+          schema:
+            $ref: '#/definitions/Departamentos'
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway  
+
+  /v1/products/subCategory/{categoryID}:
+    get:
+      tags:
+        - Produtos
+      description:
+        Retorna a lista de Sub-Departamentos
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: categoryID
+          in: path
+          description: ID da Categoria. Esse é o valor do UniqueID da TopCategory
+          required: true
+          type: string
+      responses:
+        200:
+          description: Retorno dos Sub-Departamentos
+          schema:
+            $ref: '#/definitions/SubDepartamentos'
+        404:
+          description: Não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                                    
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway                                          
+
+  /v1/products/byCategory/{categoryID}:
+    get:
+      tags:
+        - Produtos
+      description:
+        Retorna a lista de Produtos por Categoria (Sub-Departamento)
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: categoryID
+          in: path
+          description: ID da Categoria (Sub-Departamento). Para a Sprint 1, utilizar ID = 4611686018425192760
+          required: true
+          type: string
+        - name: pageNumber
+          in: query
+          description: Número da página quando houver paginação
+          required: true
+          type: string
+        - name: orderBy
+          in: query
+          description: Ordenação da página. Valores possiveis - (3 - Menor Preço, 4 - Maior Preço). No caso de Maior Relevância, não deve-se utilizar nenhum orderBy
+          required: false
+          type: string
+          
+      responses:
+        200:
+          description: Sucesso
+          schema:
+            $ref: '#/definitions/CatalogEntryView'
+        404:
+          description: Produtos não encontrados
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway                        
+
+  /v1/products/byFilters/{categoryID}:
+    get:
+      tags:
+        - Produtos
+      description:
+        Retorna a lista de Produtos filtrado por Categoria e Filtros
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: categoryID
+          in: path
+          description: ID da Categoria (Sub-Departamento). 
+          required: true
+          type: string
+        - name: filterValue
+          in: query
+          description: Valor do Filtro. Esse é o campo entryValue do atribute filters/entry. Se tiver vários filtros é necessário fazer a concatenação no próprio filterValue com as palavras AND e OR (espaço entre as palavras)
+          required: true
+          type: string          
+        - name: pageNumber
+          in: query
+          description: Número da página quando houver paginação
+          required: true
+          type: string
+      responses:
+        200:
+          description: Sucesso
+          schema:
+            $ref: '#/definitions/CatalogEntryView'
+        400:
+          description: Produtos não encontrados - Retornar lista vazia
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        404:
+          description: Produtos não encontrados
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway            
+            
+  /v1/products/{productID}:
+    get:
+      tags:
+        - Produtos
+      description:
+        Retorna a os detalhes do Produto
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: productID
+          in: path
+          description: ID do Produto.
+          required: true
+          type: string
+        - name: WCToken
+          in: header
+          description: Token
+          required: false
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: false
+          type: string                
+          
+      responses:
+        200:
+          description: Sucesso
+          schema:
+            $ref: '#/definitions/Product'
+        404:
+          description: Produto não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway 
+
+  /v1/products/byPartNumber/{SKU}:
+    get:
+      tags:
+        - Produtos
+      description:
+        Retorna a os detalhes do Produto
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: SKU
+          in: path
+          description: SKU do Produto.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Sucesso
+          schema:
+            $ref: '#/definitions/Product'
+        404:
+          description: Produto não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway 
+          
+  /v1/products/price/{productID}:
+    get:
+      tags:
+        - Produtos
+      description:
+        Retorna o preço do produto
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: productID
+          in: path
+          description: ID do Produto.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Sucesso
+          schema:
+            $ref: '#/definitions/Price'
+        404:
+          description: Produto não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway   
+
+  /v1/products/complement/{SKU}:
+    get:
+      tags:
+        - Produtos
+      description:
+        Retorna o complemento do Produto. O completo é - Selo, Preço e Rating
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: SKU
+          in: path
+          description: SKU do Produto
+          required: true
+          type: string
+      responses:
+        200:
+          description: Sucesso
+          schema:
+            $ref: '#/definitions/ProductComplement'
+        404:
+          description: Produto não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway      
+
+  /v1/products/alertme:
+    post:
+      tags:
+        - Produtos
+      description:
+        Serviço para avisar o cliente quando o produto estiver disponível
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/AlertmeModel'
+      responses:
+        204:
+          description: Sucesso
+        404:
+          description: Produto não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway                                    
+            
+  /v1/spots/{spotName}:
+    get:
+      tags:
+        - Spots
+      description:
+        Retorna o HTML que representa um Spot
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - text/html        
+      parameters:
+        - name: spotName
+          in: path
+          description: Nome do Spot, por exemplo, app_categoriaFixo_01_conteudo.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Retorna o conteúdo do Spot em HTML
+        404:
+          description: Spot não encontrado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway    
+
+  /v1/whishlist/:
+    get:
+      tags:
+        - Wishlist
+      description:
+        Retorna a lista do Whishlist
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string              
+      responses:
+        200:
+          description: Retorna os produtos da Whishlist
+          schema:
+            $ref: '#/definitions/WhishListModel'
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        404:
+          description: Não há wishlist
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway          
+
+  /v1/whishlist/add/:
+    post:
+      tags:
+        - Wishlist
+      description:
+        Adiciona um produto na Wishlist
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/WhishlistAdd'                        
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string              
+      responses:
+        201:
+          description: Produto adicionado
+          schema:
+            $ref: '#/definitions/WhishlistAddResponse'          
+        401:
+          description: Não autenticado
+          schema:
+            $ref: '#/definitions/ErrorResponse'            
+        404:
+          description: Não há wishlist
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway        
+
+  /v1/wishlist/{wishListID}/delete/{wishItemID}:
+    delete:
+      tags:
+        - Wishlist
+      description:
+        Remove um produto da Wishlist
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: wishListID
+          in: path
+          description: ID da WishList
+          required: true
+          type: string      
+        - name: wishItemID
+          in: path
+          description: ID do item da WishList
+          required: true
+          type: string
+        - name: WCToken
+          in: header
+          description: Token
+          required: true
+          type: string
+        - name: WCTrustedToken
+          in: header
+          description: Token
+          required: true
+          type: string          
+      responses:
+        204:
+          description: Logout com sucesso
+        400:
+          description: Dados inválidos
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway      
+
+  /v1/geonode/state:
+    get:
+      tags:
+        - Lojas
+      description:
+        Retorna a lista de estados
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Retorna a lista de estados
+          schema:
+            $ref: '#/definitions/GeoNodeState'
+        404:
+          description: Não há nenhum estado
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway  
+
+  /v1/geonode/city/{stateID}:
+    get:
+      tags:
+        - Lojas
+      description:
+        Retorna a lista de cidades
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: stateID
+          in: path
+          description: Identificador do Estado
+          required: true
+          type: string
+      responses:
+        200:
+          description: Retorna a lista de cidades dado um estado
+          schema:
+            $ref: '#/definitions/GeoNodeCity'
+        404:
+          description: Não há nenhuma cidade
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway   
+
+  /v1/geonode/shop/{cityID}:
+    get:
+      tags:
+        - Lojas
+      description:
+        Retorna a lista de Lojas
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: cityID
+          in: path
+          description: Identificador da Cidade
+          required: true
+          type: string
+      responses:
+        200:
+          description: Retorna a lista de lojas
+          schema:
+            $ref: '#/definitions/GeoNodeShop'
+        404:
+          description: Não há nenhuma loja
+          schema:
+            $ref: '#/definitions/ErrorResponse'                        
+        500:
+          description: Error - Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        502:
+          description: Bad gateway                                                    
+
+definitions:
+
+  ErrorResponse:
+    type: object
+    description: Objeto que contém as mensagens de erro
+    properties:
+      errorCode:
+        type: number
+        description: Código do Erro.
+      errorMessage:
+        type: string
+        description: Mensagem de Erro.
+
+  ErrorFieldsResponse:
+    type: object
+    description: Objeto que contém as mensagens de erro
+    properties:
+      errorCode:
+        type: number
+        description: Código do Erro.
+      errorList:
+        type: array
+        items:
+          $ref: '#/definitions/ErrorFields'
+
+  ErrorFields:
+    type: object
+    description: Campos de erro
+    properties:
+      errorField:
+        type: string
+        description: Nome do campo
+      errorMessage:
+        type: string
+        description: Mensagem de Erro.    
+
+  TokenData: 
+    type: object
+    description: Dados do Token
+    properties:
+      WCToken:
+        type: string
+      WCTrustedToken:
+        type: string
+
+  Cart:
+    type: object
+    description: Carrinho do usuário
+    properties:
+      orderID:
+        type: string
+        description: Identificador do Carrinho
+      orderItem:
+        type: array
+        items:
+          $ref: '#/definitions/OrderItem'
+      orderStatus:
+        type: string
+        description: Status do pedido. Valores possiveis (P - Adicionado no Carrinho, M - Pedido finalizado e aguardando entrega)
+      grandTotal:
+        type: number
+        description: Totalizador do carrinho
+
+
+  OrderItem:
+    type: object
+    description: Produto adicionado no pedido
+    properties:
+      orderItemID: 
+        type: string
+        description: Identificador da Ordem do Produto
+      catEntryID:
+        type: string
+        description: Identificador do Produto
+      shortDescription:
+        type: string
+        description: Descrição do produto
+      thumbnail:
+        type: string
+        description: Caminho das imagens
+      price:
+        type: number
+        description: Preço do produto
+      voltage:
+        type: string
+        description: Voltagem do produto, quando existir
+      quantity:
+        type: number
+        description: Quantidade do produto
+      
+  AddOrderItem:
+    type: object
+    description: Objeto para adicionar um novo pedido
+    properties:
+      productID:
+        type: string
+        description: Identificador do Produto
+      quantity:
+        type: string
+        description: Quantidade
+      attrValue:
+        type: string
+        description: Opcional. Voltagem do produto
+
+  UpdateOrderItem:
+    type: object
+    description: Objeto para adicionar um novo pedido
+    properties:
+      orderItemID:
+        type: string
+        description: Identificador do Produto
+      quantity:
+        type: number
+        description: Quantidade
+
+  AddOrderItemResponse:
+    type: object
+    description: Pedido adicionado com sucesso
+    properties:
+      orderID:
+        type: string
+        description: Identificador do Carrinho
+      orderItem:
+        type: array
+        items:
+          $ref: '#/definitions/AddOrderItemR'
+
+  AddOrderItemR:
+    type: object
+    description: Produto adicionado no pedido
+    properties:
+      orderItemID: 
+        type: string
+        description: Identificador do Produto - ProductID 
+
+  CartAddress:
+    type: object
+    description: Dados do endereço que deve ser armazenado no carrinho
+    properties:
+      orderId:
+        type: string
+        description: Identificador do Carrinho
+      addressId: 
+        type: number 
+        description: Identificador do endereço     
+
+  CartShipping: 
+    type: object
+    description: Dados do endereço que deve ser armazenado no carrinho
+    properties:
+      orderId:
+        type: string
+        description: Identificador do Carrinho
+      shipModelId: 
+        type: number 
+        description: Identificador do frete    
+      zipCode:
+        type: string
+        description: CEP
+      addressId:
+        type: string
+        description: Identicador do Endereço
+      inventoryLocationID:
+        type: string
+        description: Identificador do CD. Vem do serviço de Shipping
+      numberProducts:
+        type: number
+        description: Quantidade de produtos
+      totalCubage:
+        type: number
+        description: Vem do serviço de Shipping
+         
+  ShippingAvailables:
+    type: object
+    description: Dados do endereço que deve ser armazenado no carrinho
+    properties:
+      shippingID:
+        type: string
+        description: Identificador do Frete
+      shippingDeliver: 
+        type: number 
+        description: Dias para entrega
+      shippingRate: 
+        type: number 
+        description: Valor do frete
+      inventoryLocationID:
+        type: number 
+        description: Localização do CD. Essa informação não é apresentada na tela
+      totalCubage:
+        type: number 
+        description: Total disponível para envio. Essa informação não é apresentada na tela
+      shippingAvailableDates:
+        type: array
+        items:
+          $ref: '#/definitions/ShippingAvailableDates'
+      
+  ShippingAvailableDates: 
+    type: object
+    description: Dados das datas para entrega
+    properties:
+      availableDate:
+        type: string
+        format: date
+        description: Data disponível da entrega
+      deliverySlots:
+        type: array
+        items:
+          $ref: '#/definitions/DeliverySlots'
+
+  CartPayment:
+    type: object
+    description: Dados dos pagamentos disponíveis e cartão existentes
+    properties:
+      paymentMethods:
+        type: object
+        description: Meios de pagamentos
+        properties:
+          creditCard:
+            type: array
+            items:
+              $ref: '#/definitions/AvailableCreditCardPaymentMethod'
+          boleto:
+            type: object
+            properties:  
+              paymentMethodID:
+                type: number
+                description: Identificador do tipo de pagamento
+              validate:
+                type: string
+                format: date
+                description: Validade do boleto
+              paymentValue:
+                type: number
+                description: Total do pagamento            
+          installment:
+            type: array
+            description: Parcelas disponíveis
+            items:
+              $ref: '#/definitions/CreditCardPaymentMethod'
+
+      existingCreditCard:
+        type: array
+        items:
+          $ref: '#/definitions/ExistingCreditCard'
+      
+
+  AvailableCreditCardPaymentMethod:
+    type: object
+    description: Tipos de cartões, exemplo, VISA, MASTERCARD, etc
+    properties:
+      paymentMethodName:
+        type: string
+        description: Tipo do cartão, exemplo, VISA, MASTERCARD, HYPERCARD
+
+  ExistingCreditCard:
+    type: object
+    description: Dados do cartão de crédito
+    properties:
+      brand:
+        type: string
+        description: Tipo do cartão, podendo ser VISA, MASTERCARD, etc. O Backend envia os dados corretos
+      account:
+        type: number
+        description: número do cartão
+      expireMonth:
+        type: string
+        description: Mês de expiração
+      expireYear:
+        type: string
+        description: Ano de expiração    
+      tokenID: 
+        type: string
+        description: identificador
+      document: 
+        type: string
+        description: CPF ou CNPJ do títular
+      installment:
+        type: array
+        description: Parcelas disponíveis
+        items:
+          $ref: '#/definitions/CreditCardPaymentMethod'
+          
+  CreditCardPaymentMethod:
+    type: object
+    description: Métodos de pagamentos
+    properties:
+      paymentMethodID:
+        type: string
+        description: Identificador do tipo de pagamento
+      paymentType:
+        type: string
+        description: Texto informando se é a vista, em 2x e por ai vai
+      paymentDescription:
+        type: string
+        description: Informaçoes de juros
+      paymentValue:
+        type: number
+        description: Total do pagamento
+      numberOfInstallments: 
+        type: string
+        description: Quantidade de parcelas
+      installmentAmount: 
+        type: string
+        description: Valor da Parcela
+
+  CartCheckout:
+    type: object
+    description: Objeto que armazena os dados do checkout
+    properties:
+      account:
+        type: string
+        description: Número do cartão. Para cartões existentes, usar o mesmo valor do TokenID
+      creditCardCVC:
+        type: number
+        description: Número do CVC
+      expireMonth:
+        type: string
+        description: Mes de validade
+      expireYear:
+        type: string
+        description: Mes de ano
+      name:
+        type: string
+        description: Nome do titular
+      document:
+        type: string
+        description: CPF ou CNPJ do titular
+      storeCard:
+        type: boolean
+        description: Flag para indicar se o cartão deve ser armazenado
+      agreement:
+        type: boolean
+        description: flag informando que aceitou os termos e condições
+      addressID:
+        type: string
+        description: Identificador do endereço    
+      paymentMethodID:
+        type: string
+        description: Identificador do Payment 
+      numberOfInstallments: 
+        type: string
+        description: Quantidade de parcelas
+      totalAmount: 
+        type: string
+        description: Valor total
+      installmentAmount: 
+        type: string
+        description: Valor da Parcela
+      paymentDueDate: 
+        type: string
+        description: Quando for boleto, enviar a data de validate. formato, DD/MM/YYYY    
+      tokenID:
+        type: string
+        description: Quando usar um cartão existente, usar o tokenID.  
+      orderID:
+        type: string
+        description: Identificador do pedido  
+
+  DeliverySlots:
+    type: object
+    description: Dados das datas para entrega
+    properties:
+      periodID:
+        type: string
+        description: Identificador do período
+      periodDescription:
+        type: string
+        description: Descrição do Período, exemplo, MANHA, TARDE, NOITE.
+
+  LoginModel:
+    type: object
+    description: Informações da autenticação
+    properties:
+      document:
+        type: string
+        description: CPF ou CNPJ do cliente
+      password:
+        type: string
+        description: Password do usuário
+
+  LoginResponse:
+    type: object
+    description: Retorno da Autenticação
+    properties:
+      token:
+        type: string
+        description: Token de retorno
+      trustedToken:
+        type: string
+        description: Trusted Token
+      userID:
+        type: string
+        description: ID do usuário logado
+      nome:
+        type: string
+        description: Nome do usuário
+      email:
+        type: string
+        description: Email do usuário
+
+  Customer: 
+    type: object
+    description: Objeto que possui os dados da Pessoa
+    properties:
+      email:
+        type: string
+        description: Email do cliente. Máximo 60 caracteres
+      emailVerify:
+        type: string
+        description: Verificador para ver se o email foi digitado corretamente
+      password:
+        type: string
+        description: Senha do cliente. Máximo 20 caracteres
+      passwordVerify:
+        type: string
+        description: Verificar para ver se o password foi digitado corretamente.
+      streetName:
+        type: string
+        description: Endereço (rua). Máximo 60 caracteres
+      number:
+        type: string
+        description: Número do endereço. Máximo 10 caracteres
+      complement:
+        type: string
+        description: Complemento, se houver. Máximo 30 caracteres
+      housingType:
+        type: string
+        description: Possiveis valores- 001 – Casa, 002 – Apartamento, 003 – Condomínio, 004 – Empresa - Do endereço principal, 005 - Apto sem elevador 
+      state:
+        type: string
+        description: Estado. Máximo 3 caracteres
+      city:
+        type: string
+        description: Cidade. O valor vem do serviço de busca de CEP        
+      district:
+        type: string
+        description: Bairro. O valor vem do serviço de busca de CEP        
+      country:
+        type: string
+        description: Pais
+      zipCode:
+        type: string
+        description: CEP. Máximo 50 caracteres
+      telephone:
+        type: string
+        description: Telefone. Máximo de 60 caracteres
+      cellphone: 
+        type: string
+        description: Celular. Máximo de 60 caracteres
+      name:
+        type: string
+        description: Nome do cliente. Máximo de 60 caracteres
+      rg:
+        type: string
+        description: RG. Máximo de 25 caracteres
+      cpf:
+        type: string
+        description: CPF. Máximo de 14 caracters
+      gender:
+        type: string
+        description: Valores possiveis - Male - Masculo, Female - Feminino, E - Empresa
+      birthday:
+        type: string
+        description: Data - formato - yyyy-mm-dd
+      companyName:
+        type: string
+        description: Nome da Companhia (Nome fantasia). Máximo de 60 caracteres
+      tradeName:
+        type: string
+        description: Nome da Companhia do Serasa. Máximo de 60 caracteres        
+      ie:
+        type: string
+        description: Inscrição Estadual. Máximo de 25 caracteres
+      cnpj:
+        type: string
+        description: CNPJ. Máximo de 14 caracteres        
+      receiveEmailFast:
+        type: boolean
+        description: Permite receber email da fast
+      receiveSMSFast:
+        type: boolean
+        description: Permite receber SMS da fast
+      receiveEmailOthers:
+        type: boolean
+        description: Permite receber email de outros parceiros
+
+  CustomerPJ: 
+    type: object
+    description: Objeto que possui os dados do PJ
+    properties:
+      email:
+        type: string
+        description: Email do cliente. Máximo 60 caracteres
+      emailVerify:
+        type: string
+        description: Verificador para ver se o email foi digitado corretamente
+      password:
+        type: string
+        description: Senha do cliente. Máximo 20 caracteres
+      passwordVerify:
+        type: string
+        description: Verificar para ver se o password foi digitado corretamente.
+      address:
+        type: string
+        description: Endereço (rua). Máximo 60 caracteres
+      number:
+        type: string
+        description: Número do endereço. Máximo 10 caracteres
+      complement:
+        type: string
+        description: Complemento, se houver. Máximo 30 caracteres
+      housingType:
+        type: string
+        description: Possiveis valores- 001 – Casa, 002 – Apartamento, 003 – Condomínio, 004 – Empresa - Do endereço principal, 005 - Apto sem elevador 
+      state:
+        type: string
+        description: Estado. Máximo 3 caracteres
+      country:
+        type: string
+        description: Pais
+      zipCode:
+        type: string
+        description: CEP. Máximo 50 caracteres
+      telephone:
+        type: string
+        description: Telefone. Máximo de 60 caracteres
+      cellphone: 
+        type: string
+        description: Celular. Máximo de 60 caracteres
+      companyName:
+        type: string
+        description: Nome da Companhia (Nome fantasia). Máximo de 60 caracteres
+      tradeName:
+        type: string
+        description: Nome da Companhia do Serasa. Máximo de 60 caracteres        
+      ie:
+        type: string
+        description: Inscrição Estadual. Máximo de 25 caracteres
+      cnpj:
+        type: string
+        description: CNPJ. Máximo de 14 caracteres
+      receiveEmailFast:
+        type: boolean
+        description: Permite receber email da fast
+      receiveSMSFast:
+        type: boolean
+        description: Permite receber SMS da fast
+      receiveEmailOthers:
+        type: boolean
+        description: Permite receber email de outros parceiros  
+
+  CustomerAddresses:
+    type: object
+    description: "Listagem de Endereços do cliente"
+    properties:
+      addresses:
+        type: array
+        items:
+          $ref: '#/definitions/CustomerAddress'
+
+
+  CustomerAddress:
+    type: object
+    description: Informações do endereço do cliente
+    properties:
+      addressId:
+        type: number
+        description: Identificador do endereço
+      isMainAddress:
+        type: boolean
+        description: Flag informando se é o endereço principal
+      nickName:
+        type: string
+        description: Quando não for o endereço principal, esse é o alias do endereço
+      streetName:
+        type: string
+        description: Endereço da RUA 
+      district:
+        type: string
+        description: Bairro. O valor vem do serviço de busca de CEP        
+      city:
+        type: string
+        description: Cidade. O valor vem do serviço de busca de CEP        
+      state:
+        type: string
+        description: Estado. Máximo 3 caracteres
+      number:
+        type: string
+        description: Número          
+      complement:
+        type: string
+        description: Complemento  
+      zipCode:
+        type: string
+        description: CEP. Máximo 50 caracteres
+      housingType:
+        type: string
+        description: Possiveis valores- 001 – Casa, 002 – Apartamento, 003 – Condomínio, 004 – Empresa - Do endereço principal, 005 - Apto sem elevador 
+      telephone:
+        type: string
+        description: Telefone. Máximo de 60 caracteres
+      cellphone: 
+        type: string
+        description: Celular. Máximo de 60 caracteres
+  
+  CustomerAddressUpdate:
+    type: object
+    description: Dados para editar um novo endereço
+    properties:
+      addressID:
+        type: number
+        description: Identificador do Endereço
+      nickName:
+        type: string
+        description: Quando não for o endereço principal, esse é o alias do endereço
+      name:
+        type: string
+        description: Nome da pessoa responsável pelo endereço
+      streetName:
+        type: string
+        description: Endereço da RUA 
+      district:
+        type: string
+        description: Bairro. O valor vem do serviço de busca de CEP        
+      city:
+        type: string
+        description: Cidade. O valor vem do serviço de busca de CEP        
+      state:
+        type: string
+        description: Estado. Máximo 3 caracteres
+      number:
+        type: string
+        description: Número          
+      complement:
+        type: string
+        description: Complemento  
+      zipCode:
+        type: number
+        description: CEP. Máximo 50 caracteres
+      housingType:
+        type: string
+        description: Possiveis valores- 001 – Casa, 002 – Apartamento, 003 – Condomínio, 004 – Empresa - Do endereço principal, 005 - Apto sem elevador 
+      telephone:
+        type: string
+        description: Telefone. Máximo de 60 caracteres
+      cellphone: 
+        type: string
+        description: Celular. Máximo de 60 caracteres      
+
+  CustomerAddressCreate:
+    type: object
+    description: Dados para criar um novo endereço
+    properties:
+      nickName:
+        type: string
+        description: Quando não for o endereço principal, esse é o alias do endereço
+      name:
+        type: string
+        description: Nome da pessoa responsável pelo endereço
+      streetName:
+        type: string
+        description: Endereço da RUA 
+      district:
+        type: string
+        description: Bairro. O valor vem do serviço de busca de CEP        
+      city:
+        type: string
+        description: Cidade. O valor vem do serviço de busca de CEP        
+      state:
+        type: string
+        description: Estado. Máximo 3 caracteres
+      number:
+        type: string
+        description: Número          
+      complement:
+        type: string
+        description: Complemento  
+      zipCode:
+        type: number
+        description: CEP. Máximo 50 caracteres
+      housingType:
+        type: string
+        description: Possiveis valores- 001 – Casa, 002 – Apartamento, 003 – Condomínio, 004 – Empresa - Do endereço principal, 005 - Apto sem elevador 
+      telephone:
+        type: string
+        description: Telefone. Máximo de 60 caracteres
+      cellphone: 
+        type: string
+        description: Celular. Máximo de 60 caracteres
+
+  CEP:
+    type: object
+    description: Informações do endereço do cliente
+    properties:
+      streetName:
+        type: string
+        description: Endereço da RUA 
+      district:
+        type: string
+        description: Bairro
+      city:
+        type: string
+        description: Cidade
+      state:
+        type: string
+        description: Estado
+      country:
+        type: string
+        description: Pais
+
+  CNPJ:
+    type: object
+    description: Informações do CNPJ
+    properties:
+      tradeName:
+        type: string
+        description: Razão Social
+      ie:
+        type: string
+        description: Inscrição Estadual
+      address:
+        type: object
+        $ref: '#/definitions/Address'
+
+
+  Address:
+    type: object
+    description: Informações do endereço
+    properties:
+      streetName:
+        type: string
+        description: Nome da rua
+      number:
+        type: string
+        description: Número
+      complement:
+        type: string
+        description: Complemento
+      city:
+        type: string
+        description: Cidade
+      state:
+        type: string
+        description: Estado
+      cep:
+        type: string
+        description: CEP
+
+  Departamentos:
+    type: object
+    description: Lista de Departamentos
+    properties:
+      departments:
+        type: array
+        items:
+          $ref: '#/definitions/Departamento'
+
+  Departamento:          
+    type: object
+    description: Departamento
+    properties:
+      identifier:
+        type: string
+        description: Identificador
+      name:
+        type: string
+        description: Nome do Departamento
+      uniqueID:
+        type: string
+        description: ID único
+      thumbnail:
+        type: string
+        description: Thumbnail
+
+  SubDepartamentos:
+    type: object
+    description: Lista de Sub-departamentos
+    properties:
+      subDepartments:
+        type: array
+        items:
+          $ref: '#/definitions/SubDepartamento'
+
+
+  SubDepartamento:
+    type: object
+    description: Objeto que armazena os dados do Sub-Departamento
+    properties:
+      name:
+        type: string
+        description: Nome do Sub-Departamento
+      identifier:
+        type: string
+        description: Identificador do Sub-Departamento
+      uniqueID:
+        type: string
+        description: ID único que identifica o sub-departamento. Esse ID é utilizado nas próximas chamadas
+      nivel2:
+        type: array
+        items:
+          $ref: '#/definitions/SubDepartamentosNivel2'
+      
+  SubDepartamentosNivel2:
+    type: object
+    description: Segundo nível do Sub-Departamentos
+    properties:
+      name:
+        type: string
+        description: Nome do Sub-Departamento
+      uniqueID:
+        type: string
+        description: ID único que identifica o Sub-Departamento. Esse ID é utilizado nas próximas chamadas
+
+  CatalogEntryView:
+    type: object
+    description: Objeto que armazena os valores de retorno de uma busca de produtos.
+    properties:
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/Product'
+      topFilters:
+        type: array
+        items:
+          $ref: '#/definitions/FilterEntry'
+      filters:
+        type: array
+        items:
+          $ref: '#/definitions/Filter'
+  Spot:
+    type: object
+    description: HTML do Spot
+
+  Filter:
+    type: object
+    description: Objeto que armazena os dados de filtros
+    properties:
+      name:
+        type: string
+        description: Nome do Bloco do filtro, por exemplo, Marcas.
+      value:
+        type: string
+        description: Valor do campo. Não é utilizado na UI
+      entry:
+        type: array
+        items:
+          $ref: '#/definitions/FilterEntry'
+
+  FilterEntry:
+    type: object
+    description: Objeto que armazena os dados dos filtros
+    properties:
+      count:
+        type: number
+        description: Quantidade de items existentes
+      entryValue:
+        type: string
+        description: Valor da Entrada
+      label:
+        type: string
+        description: Label que deve ser apresentado na tela
+
+  ProductComplement:
+    type: object
+    description: Objeto que possue o Preço, Rating e Selo do Produto
+    properties:
+      price:
+        $ref: '#/definitions/Price'
+      tag:
+        type: string
+        description: Path da imagem do Selo, caso existir
+
+  Product:
+    type: object
+    description: Objeto que representa a entidade do Produto
+    properties:
+      productID:
+        type: string
+        description: Identificador único do produto
+      shortDescription:
+        type: string
+        description: Descrição resumida do produto. Essa descrição é utilizada no título do produto
+      thumbnail:
+        type: string
+        description: URL da imagem que aparece apenas no catalogo. Nos detalhes do produto essa imagem não deve aparecer.
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+      longDescription:
+        type: string
+        description: Descrição completa do Produto, conhecido como Característica. O valor deve ser apresentado como RichText
+      tag:
+        type: string
+        description: Selo do Produto. Isso será definido na Sprint 2
+      expirePrice:
+        type: string
+        description: Tempo de expiração do Preço
+      priceTag:
+        type: string
+        description: Preço de etiqueta. É o valor que na tela aparece riscado. O backend já ira retornar a formatação correta
+      priceOffer:
+        type: string
+        description: Preço da Oferta. Valor que aparece em verde na tela. A String à vista deve ser colocada pelo aplicativo
+      installmentPrice:
+        type: string
+        description: Preço da prestação. O Backend já traz tudo formatado
+      interestPrice:
+        type: string
+        description: Texto que fala juros de .... Já traz formatado do Backend
+      totalPrice:
+        type: string
+        description: Texto com o Total. Já traz formatado do Backend
+      voltage:
+        type: array
+        items:
+          $ref: '#/definitions/Voltage'
+      whishlist:
+        type: boolean
+        description: Flag para informar se o produto está na whishlist
+      buyable:
+        type: boolean
+        description: Flag para informar se o produto tem estoque ou não
+      manuals:
+        type: array
+        items:
+          $ref: '#/definitions/Manual'
+      marketPlace:
+        type: boolean
+        description: Flag para indiciar se um produto vem de market place
+      marketPlaceText:
+        type: string
+        description: Texto que deve aparecer no market place.
+      partNumber:
+        type: string
+        description: SKU do Produto        
+        
+
+  Image:
+    type: object
+    description: Objeto que armazena o carrossel de imagens
+    properties:
+      path:
+        type: string
+        description: Caminho da Imagem sem a baseURL. Por exemplo FastShopCAS/imagens/_LB_LinhaBranca/BRGAV80AB/BR-GAV80ABBNA_PRD_70_1.jpg
+      usage:
+        type: string
+        description: Tipo da imagem. Usar a que está com o texto de ANGLEIMAGES_THUMBNAIL
+
+  Voltage:
+    type: object
+    description: Tipo de Voltagem
+    properties:
+      identifier:
+        type: string
+        description: Identificador do valor da voltagem
+      name:
+        type: string
+        description: Valor que será apresentado na tela
+      catEntry:
+        type: string
+        description: Identificador do tipo do produto
+
+  Manual:
+    type: object
+    description: Manual do Produto
+    properties:
+      path:
+        type: string
+        description: Manual do Produto
+  
+  Price:
+    type: object
+    description: Preço de um produto
+    properties:
+      priceTag:
+        type: string
+        description: Preço da lista. o listPrice do AJAX
+      priceOffer:
+        type: string
+        description: Preço da oferta. No AJAX é o mesmo offerPrice
+      installmentPrice:
+        type: string
+        description: Installment Price
+      totalPrice:
+        type: string
+        description: Preço total
+      displayPriceProdInactive:
+        type: boolean
+        description: Se o preço esta ativo ou não. Campo displayPriceProdInactive
+
+  ForgotPassword:
+    type: object
+    description: Forgot Password
+    properties:
+      email:
+        type: string
+        description: Email
+
+  AlertmeModel:
+    type: object
+    description: Objeto do Avise-me
+    properties:
+      name:
+        type: string
+        description: Nome da pessoa
+      email:
+        type: string
+        description: Email da pessoa
+      zipCode:
+        type: string
+        description: CEP
+      voltage:
+        type: string
+        description: Voltagem.
+      receiveUntil:
+        type: string
+        description: Data de recebimento. Valores possiveis - week2 = 2 semanas, month1 = 1 mês, month3 = 3 meses 
+      catEntry:
+        type: string
+        description: Identificador do Produto
+      shortDescription:
+        type: string
+        description: Descrição do Produto
+      partNumber:
+        type: string
+        description: SKU do Produto        
+  
+  WhishListModel:
+    type: object
+    description: Lista de produtos
+    properties:
+      wishListID:
+        type: string
+        description: Identificador da Wishlist
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/WhishListProductModel'
+
+  WhishListProductModel:
+    type: object
+    description: Informações do Produto
+    properties:
+      wishItemID:
+        type: string
+        description: Identificador do Produto na Wishlist    
+      catEntryID:
+        type: string
+        description: Identificador único do produto
+      partNumber:
+        type: string
+        description: SKU do Produto
+      shortDescription:
+        type: string
+        description: Descrição resumida do produto. Essa descrição é utilizada no título do produto
+      thumbnail:
+        type: string
+        description: URL da imagem que aparece apenas no catalogo. Nos detalhes do produto essa imagem não deve aparecer.
+      tag:
+        type: string
+        description: Selo do Produto. Isso será definido na Sprint 2
+      priceTag:
+        type: string
+        description: Preço de etiqueta. É o valor que na tela aparece riscado. O backend já ira retornar a formatação correta
+      priceOffer:
+        type: string
+        description: Preço da Oferta. Valor que aparece em verde na tela. A String à vista deve ser colocada pelo aplicativo
+    
+  WhishlistAdd:
+    type: object
+    description: Adicionar um item no wishlist
+    properties:
+      wishListID:
+        type: string
+        description: Identificador da Wishlist        
+      catEntryID:
+        type: string
+        description: Identificador único do produto
+  
+  WhishlistAddResponse:
+    type: object
+    description: Resposta do Wish
+    properties:
+      wishListID:
+        type: string
+        description: Identificador da Wishlist    
+      wishItemID:
+        type: string
+        description: Identificador do Produto na Wishlist
+
+  CustomerReduzido:
+    type: object
+    description: Resposta do Cliente Reduzido
+    properties:
+      name:
+        type: string
+        description: Nome do cliente. Máximo de 60 caracteres
+      rg:
+        type: string
+        description: RG. Máximo de 25 caracteres
+      cpf:
+        type: string
+        description: CPF. Máximo de 14 caracters
+      gender:
+        type: string
+        description: Valores possiveis - Male - Masculo, Female - Feminino, E - Empresa
+      birthday:
+        type: string
+        description: Data - formato - yyyy-mm-dd
+
+  OrderHistory:
+    type: object
+    description: Objeto que armazena o histórico do pedido
+    properties:
+      orders:
+        type: array
+        items:
+          $ref: '#/definitions/Order'
+          
+  Order:
+    type: object
+    description: Objeto que armazena um pedido
+    properties:
+      orderID:
+        type: number
+        description: Identificador do Pedido
+      quantity:
+        type: number
+        description: Quantidade do Pedido
+      numberOfInstallment: 
+        type: number
+        description: Qtde de parcelas
+      grandTotal:
+        type: number
+        description: Total do Pedido
+      currentStatus:
+        type: string
+        description: Status atual do pedido
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/ProductOrder'
+      tracking:
+        type: array
+        items:
+          $ref: '#/definitions/Tracking'
+        
+
+  ProductOrder:
+    type: object
+    description: Objeto que armazena dados do produto dentro de um pedido
+    properties:
+      shortDescription:
+        type: string
+        description: Descrição do Produto
+      thumbnail:
+        type: string
+        description: URL da imagem que aparece apenas no catalogo. 
+      voltage:
+        type: string
+        description: Voltagem do produto, quando existir
+      quantity:
+        type: number
+        description: Quantidade do produto
+      
+  Tracking:
+    type: object
+    description: Tracking
+    properties:
+      date:
+        type: string
+        description: Data no formato dd-mm-yyyy
+      status:
+        type: string
+        description: Status do tracking
+      
+  OrderDetail:
+    type: object
+    description: Order Detail
+    properties:
+      orderID:
+        type: number
+        description: Identificador do Pedido
+      quantity:
+        type: number
+        description: Quantidade do Pedido
+      currentStatus:
+        type: string
+        description: Status atual do pedido    
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/ProductOrder'
+      shippingDeliver:
+        type: object
+        description: Informações da entrega
+        properties:
+          state:
+            type: string 
+            description: Estado 
+          period:
+            type: string
+            description: Período, exemplo, comercial, manha, tarde
+          complement:
+            type: string
+            description: Complemento do endereço
+          number:   
+            type: string
+            description: Número
+          city:
+            type: string
+            description: Cidade
+          streetName:
+            type: string
+            description: Nome da Rua
+          district:
+            type: string
+            description: Bairro
+          zipCode:
+            type: string
+            description: CEP
+          date:
+            type: string
+            description: Formato yyyy-mm-dd    
+      grandTotal:
+        type: number
+        description: Total do Pedido
+      subTotal:
+        type: number
+        description: Sub Total do Pedido
+      discountTotal:
+        type: number
+        description: Total de discontos
+      freightValue:
+        type: number
+        description: Valor do frete                      
+      numberOfInstallment: 
+        type: number
+        description: Qtde de parcelas
+      installmentAmount:
+        type: number
+        description: Total das Parcelas
+      taxesFee:
+        type: string
+        description: Texto informando os Juros
+
+  AddressByStreetRequest:
+    type: object
+    description: Objeto de request do não sei meu cep
+    properties:
+      state:
+        type: string 
+        description: Estado 
+      city:
+        type: string
+        description: Cidade
+      streetName:
+        type: string
+        description: Nome da Rua
+      district:
+        type: string
+        description: Bairro
+
+  AddressByStreetResponse:
+    type: object
+    description: Objeto de request do não sei meu cep
+    properties:
+      state:
+        type: string 
+        description: Estado 
+      city:
+        type: string
+        description: Cidade
+      streetName:
+        type: string
+        description: Nome da Rua
+      district:
+        type: string
+        description: Bairro
+      zipCode:
+        type: string
+        description: CEP
+        
+  GeoNodeState:
+    type: object
+    description: Lista de Estados
+    properties:
+      name: 
+        type: string
+        description: Nome do Estado
+      uniqueID:
+        type: string
+        description: Identificador do estado
+
+  GeoNodeCity:
+    type: object
+    description: Lista de Cidades
+    properties:
+      name: 
+        type: string
+        description: Nome da Cidade
+      uniqueID:
+        type: string
+        description: Identificador do cidade        
+  
+  GeoNodeShop:
+    type: object
+    description: Lista de lojas
+    properties:
+      stores:
+        type: array
+        items:
+          $ref: '#/definitions/GeoStore'
+
+  GeoStore:
+    type: object
+    description: Lojas
+    properties:
+      name: 
+        type: string
+        description: Nome da Loja
+      thumbnail:
+        type: string
+        description: Caminho da imagem
+      addressLine: 
+        type: string 
+        description: Esse campo vai conter a rua e número
+      city: 
+        type: string
+        description: cidade
+      telephone: 
+        type: string
+        description: Telefone
+      zipCode: 
+        type: string
+        description: CEP
+      workingHour: 
+        type: string
+        description: Texto que informa o horário de funcionamento
+
+  
